@@ -160,6 +160,8 @@
             });
             socket.on('status_actualizat', ()=>{fetchOrders(); fetchRequiredIngredients();});
             socket.on('comanda_actualizata', ()=>{fetchOrders(); fetchRequiredIngredients();});
+            socket.on('comanda_stearsa', ()=>{fetchOrders(); fetchRequiredIngredients();});
+            socket.on('stoc_actualizat', ()=>{fetchStocks();});
             return()=>socket.disconnect();
         },[]);
         const filterOrdersForBrutar=(orders)=>{
@@ -445,7 +447,7 @@
                                                     <h2 className="font-bold" style={{color:'#2D2D2D'}}>{order.nume_client||'-'}</h2>
                                                     <p className="text-xs text-gray-400 mt-0.5">
                                                         {new Date(order.data_livrare).toLocaleDateString('ro-RO')} — {new Date(order.data_livrare).toLocaleTimeString('ro-RO', {hour:'2-digit', minute:'2-digit'})}
-                                                        {order.observatii&&<span style={{color:GOLD}}> · ⚠ {order.observatii}</span>}
+                                                        {order.observatii&&<span style={{color:GOLD}}> · ⚠ {order.observatii.slice(0, 30)}{order.observatii.length > 30 ? '...' : ''}</span>}
                                                     </p>
                                                 </div>
                                                 {order.status==='anulata' ? (
@@ -590,7 +592,7 @@
                                                 <p className="font-medium text-sm" style={{color:GREEN}}>{order.nume_client||'-'}</p>
                                                 <p className="text-xs text-gray-400 mt-0.5">
                                                     {new Date(order.data_livrare).toLocaleDateString('ro-RO')} — {new Date(order.data_livrare).toLocaleTimeString('ro-RO', {hour:'2-digit', minute:'2-digit'})}
-                                                    {order.observatii&&<span style={{color:GOLD}}> · ⚠ {order.observatii}</span>}
+                                                     {order.observatii&&<span style={{color:GOLD}}> · ⚠ {order.observatii.slice(0, 30)}{order.observatii.length > 30 ? '...' : ''}</span>}
                                                 </p>
                                             </div>
                                             <span className="text-xs px-2 py-1 rounded-full font-medium flex-shrink-0" style={{background:sc.bg, color:sc.color}}>
@@ -734,7 +736,8 @@
                                     <textarea value={formData.observatii}
                                         onChange={(e)=>setFormData({...formData, observatii:e.target.value})}
                                         className="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none"
-                                        style={{borderColor:'#D1E4D3'}} rows="2"/>
+                                        style={{borderColor:'#D1E4D3'}} rows="2"
+                                        maxLength={255}/>
                                 </div>
                                 <div className="mb-4">
                                     <label className="block text-sm font-medium text-gray-600 mb-1">

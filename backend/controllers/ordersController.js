@@ -209,6 +209,9 @@ const updateOrderStatus=async(req,res)=>{
 
         if(global.io){
             global.io.emit('status_actualizat', {orderId:id, status, message:'Status actualizat'});
+            if(status==='gata'){
+                global.io.emit('stoc_actualizat');
+            }
         }
         return res.json({message:'Status actualizat cu succes'});
 
@@ -227,6 +230,9 @@ const deleteOrder=async(req,res)=>{
         const[result]=await db.query('DELETE FROM comenzi WHERE id=?',[id]);
         if(result.affectedRows===0){
             return res.status(404).json({message:'Comanda nu a fost gasita'});
+        }
+        if(global.io){
+            global.io.emit('comanda_stearsa', {orderId:id});
         }
         return res.json({message:'Comanda stearsa cu succes'});
     }catch(err){

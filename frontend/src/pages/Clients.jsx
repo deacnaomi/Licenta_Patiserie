@@ -70,7 +70,11 @@ function Clients(){
             setFormData({name:'', phone:'', address:'', notes:''});
             fetchClients();
         }catch(err){
-            setError('Eroare la salvarea clientului');
+            if(err.response?.data?.message){
+                setError(err.response.data.message);
+            }else{
+                setError('Eroare la salvarea clientului');
+            }
         }
     };
 
@@ -87,7 +91,7 @@ function Clients(){
     };
 
     const handleDelete=async(id)=>{
-        if(!window.confirm('Ești sigur că vrei să ștergi acest client? Se vor șterge și toate comenzile asociate lui!')) return;
+        if(!window.confirm('Ești sigur că vrei să ștergi acest client?')) return;
         setError('');
         try{
             await axios.delete(`${import.meta.env.VITE_API_URL}/api/clienti/${id}`,{
@@ -95,7 +99,11 @@ function Clients(){
             });
             fetchClients();
         }catch(err){
-            setError('Eroare la stergerea clientului');
+            if(err.response?.data?.message){
+                setError(err.response.data.message);
+            }else{
+                setError('Eroare la stergerea clientului');
+            }
         }
     };
 
@@ -208,7 +216,8 @@ function Clients(){
                                 <input type="text" value={formData.name}
                                     onChange={(e)=>setFormData({...formData, name:e.target.value})}
                                     className="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none"
-                                    style={{borderColor:'#D1E4D3'}} required/>
+                                    style={{borderColor:'#D1E4D3'}} required
+                                    maxLength={100}/>
                             </div>
 
                             <div className="mb-4">

@@ -34,14 +34,17 @@ const createClient=async(req,res)=>{
     if(!trimmedName){
         return res.status(400).json({message:'Numele clientului este obligatoriu'});
     }
-    if (!phone) {
-    return res.status(400).json({ message: 'Telefonul clientului este obligatoriu' });
-    }    
-
     try{
+        const[existing]=await db.query(
+            'SELECT id FROM clienti WHERE nume=?',
+            [trimmedName]
+        );
+        if(existing.length>0){
+            return res.status(400).json({message:'Există deja un client cu acest nume'});
+        }
         const[result]=await db.query(
             'INSERT INTO clienti (nume, telefon, adresa, observatii) VALUES(?,?,?,?)',
-            [trimmedName, phone, address||null, notes||null]
+            [trimmedName, phone||null, address||null, notes||null]
         );
         return res.status(201).json({message:'Client creat cu succes', id:result.insertId});
     }catch(err){
@@ -60,9 +63,6 @@ const updateClient=async(req,res)=>{
 
     if(!trimmedName){
         return res.status(400).json({message:'Numele clientului este obligatoriu'});
-    }
-    if(!phone){
-        return res.status(400).json({message:'Telefonul clientului este obligatoriu'});
     }
     try{
         const[result]=await db.query(
@@ -85,6 +85,12 @@ const deleteClient=async(req,res)=>{
         return res.status(400).json({message:'ID invalid'});
     }
     try{
+        const[orders]=await db.query(
+            'SELECT id FROM comenzi WHERE client_id=?',[id]
+        );
+        if(orders.length>0){
+            return res.status(400).json({message:'Nu poți șterge un client care are comenzi asociate'});
+        }
         const[result]=await db.query('DELETE FROM clienti WHERE id=?',[id]);
         if(result.affectedRows===0){
             return res.status(404).json({message:'Clientul nu a fost gasit'});

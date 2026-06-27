@@ -1,5 +1,6 @@
 import {useState, useEffect} from 'react';
 import axios from 'axios';
+import {io} from 'socket.io-client';
 import {useNavigate} from 'react-router-dom';
 
 const GREEN='#6B8F71';
@@ -59,6 +60,17 @@ function Stocks(){
         fetchStocks();
         fetchIngredients();
     },[token, navigate]);
+
+    useEffect(()=>{
+        const socket=io(import.meta.env.VITE_API_URL);
+        socket.on('stoc_actualizat', async()=>{
+            const response=await axios.get(`${import.meta.env.VITE_API_URL}/api/stocuri`,{
+                headers:{Authorization:`Bearer ${token}`}
+            });
+            setStocks([...response.data]);
+        });
+        return()=>socket.disconnect();
+    },[token]);
 
     const handleSubmit=async(e)=>{
         e.preventDefault();

@@ -1,6 +1,6 @@
-const db=require('../config/db');//import conexiunea la baza de date
+const db=require('../config/db');
 
-const getStocks=async(req,res)=>{//returneaza toate stocurile cu numele ingredientului
+const getStocks=async(req,res)=>{
     try{
         const[rows]=await db.query(`
             SELECT s.*, i.denumire as nume_ingredient, i.unitate_masura
@@ -15,7 +15,7 @@ const getStocks=async(req,res)=>{//returneaza toate stocurile cu numele ingredie
     }
 };
 
-const getStockById=async(req,res)=>{//returneaza un stoc dupa id
+const getStockById=async(req,res)=>{
     const id=parseInt(req.params.id);
     if(isNaN(id)){
         return res.status(400).json({message:'ID invalid'});
@@ -37,7 +37,7 @@ const getStockById=async(req,res)=>{//returneaza un stoc dupa id
     }
 };
 
-const createStock=async(req,res)=>{//creeaza un stoc nou
+const createStock=async(req,res)=>{
     const{ingredient_id, cantitate_disponibila, prag_minim}=req.body;
 
     if(!ingredient_id || cantitate_disponibila==null || prag_minim==null){
@@ -60,6 +60,9 @@ const createStock=async(req,res)=>{//creeaza un stoc nou
             'INSERT INTO stocuri (ingredient_id, cantitate_disponibila, prag_minim) VALUES(?,?,?)',
             [ingredient_id, cantitate_disponibila, prag_minim]
         );
+        if(global.io){
+            global.io.emit('stoc_actualizat');
+        }
         return res.status(201).json({message:'Stoc creat cu succes', id:result.insertId});
     }catch(err){
         console.error(err);
@@ -67,7 +70,7 @@ const createStock=async(req,res)=>{//creeaza un stoc nou
     }
 };
 
-const updateStock=async(req,res)=>{//actualizeaza un stoc
+const updateStock=async(req,res)=>{
     const id=parseInt(req.params.id);
     if(isNaN(id)){
         return res.status(400).json({message:'ID invalid'});
@@ -92,6 +95,9 @@ const updateStock=async(req,res)=>{//actualizeaza un stoc
         if(result.affectedRows===0){
             return res.status(404).json({message:'Stocul nu a fost gasit'});
         }
+        if(global.io){
+            global.io.emit('stoc_actualizat');
+        }
         return res.json({message:'Stoc actualizat cu succes'});
     }catch(err){
         console.error(err);
@@ -99,7 +105,7 @@ const updateStock=async(req,res)=>{//actualizeaza un stoc
     }
 };
 
-const deleteStock=async(req,res)=>{//sterge un stoc
+const deleteStock=async(req,res)=>{
     const id=parseInt(req.params.id);
     if(isNaN(id)){
         return res.status(400).json({message:'ID invalid'});
@@ -116,7 +122,6 @@ const deleteStock=async(req,res)=>{//sterge un stoc
     }
 };
 
-// GET /api/stocuri/alerta - returneaza stocurile sub pragul minim
 const getLowStocks=async(req,res)=>{
     try{
         const[rows]=await db.query(`
