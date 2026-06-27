@@ -42,7 +42,7 @@ function App(){
                     </ProtectedRoute>
                 } />
                 <Route path="/comenzi/:id" element={
-                    <ProtectedRoute allowedRoles={['admin', 'brutar']}>
+                    <ProtectedRoute allowedRoles={['admin']}>
                         <OrderDetails />
                     </ProtectedRoute>
                 } />
