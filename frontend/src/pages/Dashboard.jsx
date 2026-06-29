@@ -79,7 +79,7 @@ function Dashboard(){
                     </div>
                     <div className="bg-white rounded-xl border p-4" style={{borderColor:'#D1E4D3'}}>
                         <p className="text-sm mb-1" style={{color:'#6B8F71'}}>Vânzări azi</p>
-                        <p className="text-3xl font-bold" style={{color:GOLD}}>{Number(stats.todayOrders.vanzari).toFixed(2)} RON</p>
+                        <p className="text-3xl font-bold" style={{color:GOLD}}>{Number(stats.todaySales.vanzari).toFixed(2)} RON</p>
                     </div>
                     <div className="bg-white rounded-xl border p-4" style={{borderColor:'#D1E4D3'}}>
                         <p className="text-sm mb-1" style={{color:'#6B8F71'}}>Total comenzi</p>

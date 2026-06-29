@@ -29,6 +29,12 @@ const getDashboardStats=async(req,res)=>{
             ORDER BY total_comandat DESC
             LIMIT 5
         `);
+        const[todaySales]=await db.query(`
+            SELECT COALESCE(SUM(total), 0) as vanzari
+            FROM comenzi
+            WHERE DATE(data_livrare)=CURDATE()
+            AND status='predata'
+        `);
 
         const[weeklySales]=await db.query(`
             SELECT 
@@ -44,6 +50,7 @@ const getDashboardStats=async(req,res)=>{
 
         return res.json({
             todayOrders: todayOrders[0],
+             todaySales: todaySales[0],
             ordersByStatus,
             lowStocks,
             topProducts,
